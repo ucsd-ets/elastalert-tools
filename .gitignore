@@ -1,2 +1,7 @@
 config
 bin/
+.tox/
+.eggs/
+__pycache__/
+*.pyc
+*.egg-info/

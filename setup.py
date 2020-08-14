@@ -15,7 +15,8 @@ setuptools.setup(
     install_requires=[
         'requests', 
         'elastalert',
-        'kubernetes'
+        'kubernetes',
+        'oo-tools'
     ],
     python_requires='>=3.6',
     setup_requires = ['pytest-runner', 'elastalert'],

@@ -12,9 +12,15 @@ RUN cd /opt/elastalert-tools && \
     python3 setup.py bdist_wheel && \
     pip3 install dist/*.whl
 
-COPY ./config /home/kube/.kube/config
+#COPY ./config /home/kube/.kube/config
 
 WORKDIR /opt/elastalert-tools
 
-ENV JUPYTERHUB_BASEURL='https://datahub.ucsd.edu'
-ENV JUPYTERHUB_API_TOKEN='SOMETHING'
+# supply these to build arg --build-arg JUPYTERHUB_API_TOKEN=...
+ARG JUPYTERHUB_API_TOKEN
+ARG LIVE_DATAHUB_TEST
+
+ENV JUPYTERHUB_BASEURL='https://datahub-dev.ucsd.edu/hub/api/'
+
+ENV JUPYTERHUB_API_TOKEN=${JUPYTERHUB_API_TOKEN}
+ENV LIVE_DATAHUB_TEST=${LIVE_DATAHUB_TEST}

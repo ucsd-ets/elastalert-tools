@@ -15,21 +15,45 @@ class Requestor:
     def __init__(self, auth_headers=None, baseurl=None):
         self.auth = auth_headers
         self.baseurl = baseurl
-    
-    def get(self, subroute):
-        try:
+        
+    def _parse_url(self, subroute):
+            if subroute == '':
+                # must strip away trailing slash
+                return self.baseurl[:-1]
             
-            r = requests.get(urljoin(self.baseurl, subroute), headers=self.auth)
+            return urljoin(self.baseurl, subroute)
+        
+    @property
+    def baseurl(self):
+        return self._baseurl
+    
+    @baseurl.setter
+    def baseurl(self, baseurl):
+        if not baseurl.endswith('/'):
+            raise DatahubAPIError(f'baseurl must end with a trail slash, not = {baseurl}')
+        
+        self._baseurl = baseurl
+    
+    def get(self, subroute=''):
+        try:
+            url = self._parse_url(subroute)
+
+            r = requests.get(url, headers=self.auth)
             return r.json()
 
         except Exception as e:
             raise DatahubAPIError(f'error = {e}')
     
     def delete(self, subroute):
+        if subroute == '':
+            raise DatahubAPIError('You must specify a user to create')
         r = requests.delete(urljoin(self.baseurl, subroute), headers=self.auth)
-        return r.json()
+        return r
     
-    def post(self, subroute):
+    def create(self, subroute):
+        if subroute == '':
+            raise DatahubAPIError('You must specify a user to create')
+
         r = requests.post(urljoin(self.baseurl, subroute), headers=self.auth)
         return r.json()
 
@@ -43,4 +67,4 @@ class Datahub:
     
     @property
     def users(self):
-        return Requestor(self.auth_headers, self.baseurl)
+        return Requestor(self.auth_headers, urljoin(self.baseurl, 'users/'))

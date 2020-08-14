@@ -1,5 +1,6 @@
 import unittest, random
 from kubernetes import client
+from shutil import which
 
 from elastalert_tools.kube import *
 
@@ -25,6 +26,8 @@ def manifest_with_command(name, command):
 
 CONFIG_PATH = '/home/kube/.kube/config'
 
+KUBE_DOES_NOT_EXIST = which('kubectl') is None
+@unittest.skipIf(KUBE_DOES_NOT_EXIST, 'kubernetes cluster not available')
 class TestK8SAPI(unittest.TestCase):
     def setUp(self):
         load_k8s(CONFIG_PATH)
@@ -34,6 +37,7 @@ class TestK8SAPI(unittest.TestCase):
         assert self.api.namespaces is not None, 'namespaces doesnt exist'
         assert 'default' in self.api.namespaces, f'default doesnt exist = {self.api.namespaces}'
         
+@unittest.skipIf(KUBE_DOES_NOT_EXIST, 'kubernetes cluster not available')
 class TestPod(unittest.TestCase):
     def setUp(self):
         load_k8s(CONFIG_PATH)
@@ -68,6 +72,7 @@ class TestPod(unittest.TestCase):
         with self.assertRaises(K8SResourceNotFound):
             Pod(name)
 
+@unittest.skipIf(KUBE_DOES_NOT_EXIST, 'kubernetes cluster not available')
 class TestNode(unittest.TestCase):
     def setUp(self):
         load_k8s(CONFIG_PATH)
